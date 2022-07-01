@@ -8,8 +8,7 @@ Author URI: https://demo.com
 */
 
 if(!defined('ABSPATH')){
-    header('location: /wordpress/demo');
-    die();
+    exit;
 }
 function my_custom_script() {
     echo '<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">';
@@ -76,6 +75,7 @@ function my_custom_scripts_adm(){
     $dep = array('jquery'); //optional
     $ver = filemtime(plugin_dir_path(__FILE__).'admin/js/adm-main.js');
     wp_enqueue_script('my-custom-script-adm', $path_js, $dep, $ver, true);
+    wp_add_inline_script('my-custom-script-adm', 'var ajaxurl ="'.admin_url('admin-ajax.php').'";','before'); 
 }
 add_action('admin_enqueue_scripts','my_custom_scripts_adm');
 function show_data(){
@@ -174,7 +174,6 @@ function my_serach_res(){
     global $wpdb, $table_prefix;
     $tbl_emp = $table_prefix.'emp';
     $searchTerm = $_POST['searchTerm'];
-
     if(!empty($searchTerm)){
        $getData = "SELECT * FROM `$tbl_emp` WHERE 
        `name` LIKE '%".$searchTerm."%'
@@ -183,7 +182,7 @@ function my_serach_res(){
     }else{
        $getData = "SELECT * FROM `$tbl_emp`;";
     }
-    $results = $wpdb->get_results($getData);    
+    $results = $wpdb->get_results($getData);
     ob_start();
     foreach($results as $row): ?>
         <tr>
@@ -193,7 +192,7 @@ function my_serach_res(){
             <td><?php if($row->status == 1){ echo 'Active';} else{ echo 'Deactive';} ?></td>
         </tr>
     <?php endforeach; 
-    return ob_get_clean();
+    echo ob_get_clean();
     wp_die();
 }
 
